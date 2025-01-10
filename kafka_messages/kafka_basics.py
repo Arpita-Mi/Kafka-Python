@@ -1,25 +1,25 @@
 from kafka import KafkaProducer , KafkaConsumer
+from config.config import settings
 
-
-producer = KafkaProducer(bootstrap_servers='localhost:9092')
+producer = KafkaProducer(bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS)
 
 # Using
 for i in range(10):
-    future = producer.send('test-topic', key=str(i).encode(), value=f"message {i}".encode())
+    future = producer.send(settings.TOPIC_NAME, key=str(i).encode(), value=f"message {i}".encode())
     
 producer.flush()
 producer.close()
 
 conf = {
 
-    'bootstrap.servers': 'localhost:9092',
+    'bootstrap.servers': settings.KAFKA_BOOTSTRAP_SERVERS,
     'group.id': 'my-group',
     'auto.offset.reset': 'earliest'
 }
 
 consumer = KafkaConsumer(
-    'test-topic', 
-    bootstrap_servers='localhost:9092', 
+    settings.TOPIC_NAME, 
+    bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS, 
     group_id='my-group', 
     auto_offset_reset='earliest'  # Start reading from the earliest message if no offset is found
 )
