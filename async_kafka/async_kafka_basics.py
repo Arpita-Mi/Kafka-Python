@@ -1,17 +1,17 @@
 import asyncio
 from aiokafka import AIOKafkaProducer, AIOKafkaConsumer
-
+from config.config import settings
 
 async def produce():
     # Create Kafka producer
-    producer = AIOKafkaProducer(bootstrap_servers='localhost:9092')
+    producer = AIOKafkaProducer(bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS)
     await producer.start()
 
     try:
         for i in range(10):
             key = str(i).encode()
             value = f"message {i}".encode()
-            await producer.send_and_wait('test-topic', key=key, value=value)
+            await producer.send_and_wait(settings.TOPIC_NAME, key=key, value=value)
             print(f"Sent message {i} to test-topic")
     finally:
         await producer.stop()
@@ -20,8 +20,8 @@ async def produce():
 async def consume():
     # Create Kafka consumer
     consumer = AIOKafkaConsumer(
-        'test-topic',  # topic name
-        bootstrap_servers='localhost:9092',  # Kafka broker address
+        settings.TOPIC_NAME, 
+        bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
         group_id='my-group',  # Consumer group ID
         auto_offset_reset='earliest'  # Start reading from the earliest message if no offset is found
     )
